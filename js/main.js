@@ -23,11 +23,42 @@
     'Client Success': 'assets/images/why-client-success.png',
     'Continuous Optimization': 'assets/images/why-continuous-optimization.png'
   };
+  const resultsCarousel = document.getElementById('results-carousel');
+  if (resultsCarousel) {
+    const introSlide = document.createElement('img');
+    introSlide.className = 'result-intro active';
+    introSlide.src = 'assets/images/why-small2large.png';
+    introSlide.alt = 'Small2Large growth strategy';
+    resultsCarousel.insertBefore(introSlide, resultsCarousel.firstChild);
+    resultsCarousel.querySelectorAll('img:not(.result-intro)').forEach(slide => slide.classList.add('ads-result'));
+  }
+  const resultSlides = resultsCarousel ? Array.from(resultsCarousel.querySelectorAll('img')) : [];
+  const resultsIndicator = resultsCarousel ? resultsCarousel.querySelector('.results-indicator') : null;
+  let currentResult = 0;
+  let resultsTimer;
+  const showResult = index => {
+    if (!resultSlides.length) return;
+    currentResult = (index + resultSlides.length) % resultSlides.length;
+    resultSlides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === currentResult));
+    if (resultsIndicator) resultsIndicator.textContent = `${currentResult + 1} / ${resultSlides.length}`;
+  };
+  const startResultsAutoplay = () => {
+    window.clearInterval(resultsTimer);
+    resultsTimer = window.setInterval(() => showResult(currentResult + 1), 4500);
+  };
+  if (resultsCarousel) {
+    showResult(0);
+    resultsCarousel.querySelector('.results-prev').addEventListener('click', () => { showResult(currentResult - 1); startResultsAutoplay(); });
+    resultsCarousel.querySelector('.results-next').addEventListener('click', () => { showResult(currentResult + 1); startResultsAutoplay(); });
+    startResultsAutoplay();
+  }
   whyTabs.forEach(tab => tab.addEventListener('click', () => {
     whyTabs.forEach(item => item.setAttribute('aria-selected', 'false'));
     tab.setAttribute('aria-selected', 'true');
-    whyImage.style.opacity = '0';
-    window.setTimeout(() => { whyHeading.textContent = tab.dataset.title; whyKicker.textContent = tab.dataset.kicker; whyCopy.textContent = tab.dataset.copy; whyImage.src = whyImageSources[tab.dataset.title] || 'assets/images/why-small2large.png'; whyImage.style.opacity = '1'; }, 180);
+    const showingResults = tab.dataset.title === 'Results';
+    if (resultsCarousel) resultsCarousel.classList.toggle('active', showingResults);
+    whyImage.style.opacity = showingResults ? '0' : '1';
+    window.setTimeout(() => { whyHeading.textContent = tab.dataset.title; whyKicker.textContent = tab.dataset.kicker; whyCopy.textContent = tab.dataset.copy; if (!showingResults) whyImage.src = whyImageSources[tab.dataset.title] || 'assets/images/why-small2large.png'; }, 180);
   }));
   const leadersCarousel = document.getElementById('leaders-carousel');
   const leadersPrev = document.getElementById('leaders-prev');
