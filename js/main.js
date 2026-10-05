@@ -13,6 +13,10 @@
   const countObserver = new IntersectionObserver(entries => entries.forEach(entry => { if (!entry.isIntersecting) return; const el = entry.target; const target = Number(el.dataset.count); const suffix = el.dataset.suffix || ''; const prefix = el.dataset.prefix || ''; const start = performance.now(); const duration = 1350; const tick = now => { const progress = Math.min((now - start) / duration, 1); const eased = 1 - Math.pow(1 - progress, 4); el.textContent = prefix + Math.floor(target * eased).toLocaleString('en-IN') + suffix; if (progress < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); countObserver.unobserve(el); }), { threshold: .5 });
   numbers.forEach(number => countObserver.observe(number));
   document.getElementById('year').textContent = new Date().getFullYear();
+  document.querySelectorAll('a[href="mailto:s2lbussiness@gmail.com"]').forEach(link => {
+    link.href = 'mailto:info@small2large.in';
+    if (link.textContent.includes('@')) link.textContent = 'info@small2large.in';
+  });
   const whyTabs = document.querySelectorAll('.why-tab');
   const whyHeading = document.getElementById('why-heading');
   const whyKicker = document.getElementById('why-kicker');
